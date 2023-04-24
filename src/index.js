@@ -13,34 +13,53 @@ document.addEventListener("DOMContentLoaded", () => {
   const getRamenPictures = () => {
     return fetch("http://localhost:3000/ramens")
       .then((res) => res.json())
-      .then((data) => {
-        const ramenMenu = document.querySelector("#ramen-menu");
-        data.forEach((ramen) => {
-          const image = document.createElement("img");
-          image.src = ramen.image;
-          image.classList.add("ramen-picture");
-          ramenMenu.appendChild(image);
-        });
-        console.log(ramenMenu);
+      .then((ramensData) => {
+        renderRamen(ramensData);
       });
   };
 
+  function renderRamen(ramens) {
+    updateRamen(ramens[0]);
+    ramens.forEach(appendRamenImage);
+  }
+
+  function appendRamenImage(ramen) {
+    const ramenMenu = document.querySelector("#ramen-menu");
+    const img = document.createElement("img");
+    img.src = ramen.image;
+    img.details = ramen.details;
+    img.classList.add("ramen-picture");
+    img.addEventListener("click", () => updateRamen(ramen));
+    ramenMenu.append(img);
+    updateRamen(ramen);
+  }
+
+  function updateRamen(ramen) {
+    const name = document.querySelector(".name");
+    name.innerText = ramen.name;
+    const image = document.querySelector(".detail-image");
+    image.src = ramen.image;
+    const restaurant = document.querySelector(".restaurant");
+    restaurant.innerText = ramen.restaurant;
+    const rating = document.querySelector("#rating-display");
+    rating.innerText = ramen.rating;
+    const comment = document.querySelector("#comment-display");
+    comment.innerText = ramen.comment;
+  }
   const ramenForm = document.querySelector("#new-ramen");
   ramenForm.addEventListener("submit", createNewRamen);
 
   function createNewRamen(e) {
     e.preventDefault();
-    console.log(ramenForm);
-    const newName = document.querySelector("#new-name").value;
-    console.log(newName);
-    const newRestaurant = document.querySelector("#new-restaurant").value;
-    console.log(newRestaurant);
-    const newImage = document.querySelector("#new-image").value;
-    console.log(newImage);
-    const newRating = document.querySelector("#new-rating").value;
-    console.log(newRating);
-    const newComment = document.querySelector("#new-comment").value;
-    console.log(newComment);
+    const name = document.querySelector("#new-name").value;
+    const restaurant = document.querySelector("#new-restaurant").value;
+    const image = document.querySelector("#new-image").value;
+    const rating = document.querySelector("#new-rating").value;
+    const comment = document.querySelector("#new-comment").value;
+
+    const ramen = { name, restaurant, image, rating, comment };
+
+    appendRamenImage(ramen);
   }
   getRamenPictures();
 });
